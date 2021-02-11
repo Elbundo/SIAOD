@@ -11,7 +11,7 @@ void selection_sort(int* arr, const int n)
 				min_i = j;
 		}
 		if(min_i != i)
-			swap(arr, i, min_i);
+			swap(&arr[i], &arr[min_i]);
 	}
 }
 
@@ -34,7 +34,7 @@ void bubble_sort(int* arr, const int n)
 	for(int i = 0; i < n - 1; i++){
 		for(int j = 0; j < n - 1 - i; j++){
 			if(arr[j] > arr[j + 1])
-				swap(arr, j, j + 1);
+				swap(&arr[j], &arr[j + 1]);
 		}
 	}
 }
@@ -44,13 +44,18 @@ void shell_sort(int* arr, const int n){
 		for(int i = 0; i < n; i++){
 			for(int j = i + s; j < n; j += s){
 				if(arr[i] > arr[j])
-					swap(arr, i, j);
+					swap(&arr[i], &arr[j]);
 			}		
 		}	
 	}
 }
 
-void quick_sort(int* arr, int first, int last)
+void my_qsort(int* arr, int n)
+{
+	my_qsort_rec(arr, 0, n);
+}
+
+void my_qsort_rec(int* arr, int first, int last)
 {
 	if(first < last){
 		int left = first, right = last, middle = arr[(left + right) / 2];
@@ -61,19 +66,58 @@ void quick_sort(int* arr, int first, int last)
 			while(arr[right] > middle)
 				right--;
 			if(left <= right){
-				swap(arr, left, right);
+				swap(&arr[left], &arr[right]);
 				left++;
 				right--;
 			}
 		} while(left <= right);
-		quick_sort(arr, first, right);
-		quick_sort(arr, left, last);
+		my_qsort_rec(arr, first, right);
+		my_qsort_rec(arr, left, last);
 	}			
 }
 
-void swap(int* arr, int a, int b)
+void inc_qsort(int* arr, int n)
 {
-	int tmp = arr[a];
-	arr[a] = arr[b];
-	arr[b] = tmp;
+	qsort(arr, n, sizeof(int), (int(*)(const void *, const void *))comp);
 }
+
+void heap_sort(int* arr, int n){
+	build_heap(arr, n);
+	while(n > 1){
+		swap(&arr[0], &arr[n - 1]);
+		n--;
+		sift_down(arr, 0, n);
+	}
+}
+
+void build_heap(int* arr, int n)
+{
+	for(int i = (n / 2) - 1; i >= 0; i--)
+		sift_down(arr, i, n);
+}
+
+void sift_down(int* arr, int i, int n)
+{
+	int l = 2 * i + 1, r = 2 * i + 2, larg = i;
+	if(l < n && arr[l] > arr[i])
+		larg = l;
+	if(r < n && arr[r] > arr[larg])
+		larg = r;
+	if(larg != i){
+		swap(&arr[i], &arr[larg]);
+		sift_down(arr, larg, n);
+	}
+}
+
+void swap(int* a, int* b)
+{
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+
+int comp(const int* a, const int* b)
+{
+	return *a - *b;
+}
+

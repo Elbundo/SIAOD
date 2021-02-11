@@ -4,77 +4,45 @@
 #include "mysort.h"
 
 #define ARR_LEN 1000
+#define f_count 7
 
 void cp_arr(int[ARR_LEN][ARR_LEN], int[ARR_LEN][ARR_LEN], int, int);
-int comp(const int *, const int *);
+
+typedef struct sort_func
+{
+	char* name;
+	void (*func)(int*, int);
+} sort_f; 
 
 int main(int argc, char* argv[])
 {
-	clock_t begin, end;
-	double time_select, time_insert, time_bubble, time_shell, time_my_quick, time_quick;
 	srandom(time(NULL));
+	clock_t begin, end;
 	int arr[ARR_LEN][ARR_LEN], sort_arr[ARR_LEN][ARR_LEN];
+	sort_f sort_functions[] = {
+		{"Selection sort", &selection_sort},
+		{"Insertion sort", &insertion_sort},
+		{"Bubble sort", &bubble_sort},
+		{"Shell sort", &shell_sort},
+		{"My quick sort", &my_qsort},
+		{"Quick sort", &inc_qsort},
+		{"Heap sort", &heap_sort}
+	};
 	for(int i = 0; i < ARR_LEN; i++){
 		for(int j = 0; j < ARR_LEN; j++){
 			arr[i][j] = random() % ARR_LEN;
 		}
 	}
-	cp_arr(arr, sort_arr, ARR_LEN, ARR_LEN);
-	begin = clock();
-	for(int i = 0; i < ARR_LEN; i++){
-		selection_sort(sort_arr[i], ARR_LEN);
+	for(int i = 0; i < f_count; i++){
+		cp_arr(arr, sort_arr, ARR_LEN, ARR_LEN);
+		begin = clock();
+		for(int j = 0; j < ARR_LEN; j++){
+			(*(sort_functions[i].func))(sort_arr[j], ARR_LEN);
+		}
+		end = clock();
+		printf("%s run time - %.2f s \n", sort_functions[i].name, (double)(end - begin) / CLOCKS_PER_SEC);
 	}
-	end = clock();
-	time_select = (double)(end - begin) / CLOCKS_PER_SEC;
-	
-	cp_arr(arr, sort_arr, ARR_LEN, ARR_LEN);
-	begin = clock();
-	for(int i = 0; i < ARR_LEN; i++){
-		insertion_sort(sort_arr[i], ARR_LEN);
-	}
-	end = clock();
-	time_insert = (double)(end - begin) / CLOCKS_PER_SEC;
-	
-	cp_arr(arr, sort_arr, ARR_LEN, ARR_LEN);
-	begin = clock();
-	for(int i = 0; i < ARR_LEN; i++){
-		bubble_sort(sort_arr[i], ARR_LEN);
-	}
-	end = clock();
-	time_bubble = (double)(end - begin) / CLOCKS_PER_SEC;
-	
-	cp_arr(arr, sort_arr, ARR_LEN, ARR_LEN);
-	begin = clock();
-	for(int i = 0; i < ARR_LEN; i++){
-		shell_sort(sort_arr[i], ARR_LEN);
-	}
-	end = clock();
-	time_shell = (double)(end - begin) / CLOCKS_PER_SEC;
-	
-	cp_arr(arr, sort_arr, ARR_LEN, ARR_LEN);
-	begin = clock();
-	for(int i = 0; i < ARR_LEN; i++){
-		quick_sort(sort_arr[i], 0, ARR_LEN);
-	}
-	end = clock();
-	time_my_quick = (double)(end - begin) / CLOCKS_PER_SEC;
-	
-	cp_arr(arr, sort_arr, ARR_LEN, ARR_LEN);
-	begin = clock();
-	for(int i = 0; i < ARR_LEN; i++){
-		qsort(sort_arr[i], ARR_LEN, sizeof(int), (int(*)(const void *, const void *))comp);
-	}
-	end = clock();
-	time_quick = (double)(end - begin) / CLOCKS_PER_SEC;
-	
-	printf("\n");
-	
-	printf("Selection sort run time - %.2f s \n", time_select);
-	printf("Insertion sort run time - %.2f s \n", time_insert);
-	printf("Bubble sort run time    - %.2f s \n", time_bubble);
-	printf("Shell sort run time     - %.2f s \n", time_shell);
-	printf("My quick sort run time  - %.2f s \n", time_my_quick);
-	printf("Quick sort run time     - %.2f s \n", time_quick);
+
 	return 0;
 }
 
@@ -86,7 +54,4 @@ void cp_arr(int from[ARR_LEN][ARR_LEN], int to[ARR_LEN][ARR_LEN], int columns, i
 	}
 }
 
-int comp(const int* a, const int* b)
-{
-	return *a - *b;
-}
+
