@@ -19,7 +19,7 @@ vector* v_create_random(int n)
 	vec->size = n;
 	vec->max_size = n;
 	for(int i = 0; i < n; i++)
-		vec->array[i] = rand() % n;
+		vec->array[i] = rand() % (10*n);
 	return vec;
 }
 
@@ -150,33 +150,123 @@ int v_bsearch(vector* vec, int key)
 	return my_bsearch(vec->array, vec->size, key);
 }
 
+int v_fsearch(vector* vec, int key)
+{
+	return my_bsearch(vec->array, vec->size, key);
+}
+
 int v_intersearch(vector *vec, int key)
 {
 	return my_intersearch(vec->array, vec->size, key);
 }
 
 
-
 /*Binary Tree*/
 
-
-void btree_add(btree **root, int key)
+char height(btree *root)
 {
-	if(!*root){
-		*root = (btree*)malloc(sizeof(btree));
-		(*root)->key = key;
-		(*root)->left = NULL;
-		(*root)->right = NULL;
-		return;
-	}
-	if((*root)->key == key)
-		return;
-	if((*root)->key > key)
-		btree_add(&(*root)->left, key);
-	else
-		btree_add(&(*root)->right, key);
+	return root?root->h:0;
 }
 
+int bfactor(btree *root)
+{
+	return height(root->right) - height(root->left);
+}
+
+void fixheight(btree *root)
+{
+	char hl = height(root->left);
+	char hr = height(root->right);
+	root->h = (hl > hr ? hl : hr) + 1;
+}
+
+btree* rotateright(btree *root)
+{
+	btree *newroot = root->left;
+	root->left = newroot->right;
+	newroot->right = root;
+	fixheight(root);
+	fixheight(newroot);
+	return newroot;
+}
+
+btree* rotateleft(btree *root)
+{
+	btree *newroot = root->right;
+	root->right = newroot->left;
+	newroot->left = root;
+	fixheight(root);
+	fixheight(newroot);
+	return newroot;
+}
+
+btree* balance(btree *root)
+{
+	fixheight(root);
+	if(bfactor(root) == 2){
+		if(bfactor(root->right) < 0)
+			root->right = rotateright(root->right);
+		return rotateleft(root);
+	}
+	if(bfactor(root) == -2){
+		if(bfactor(root->left) > 0)
+			root->left = rotateleft(root->left);
+		return rotateright(root);
+	}
+	return root;
+}
+
+btree* btree_add(btree *root, int key)
+{
+	if(!root){
+		root = (btree*)malloc(sizeof(btree));
+		root->key = key;
+		root->h = 1;
+		root->left = NULL;
+		root->right = NULL;
+		return root;
+	}
+	if(root->key == key)
+		return root;
+	if(root->key > key)
+		root->left = btree_add(root->left, key);
+	else
+		root->right = btree_add(root->right, key);
+	return balance(root);
+}
+
+btree* findmin(btree *root)
+{
+	return root->left ? findmin(root->left) : root;
+}
+
+btree* removemin(btree* root)
+{
+	if(root->left == NULL)
+		return root->right;
+	root->left = removemin(root->left);
+	return balance(root);
+}
+
+btree* btree_remove(btree* root, int key)
+{
+	if(!root) return NULL;
+	if(root->key > key){
+		root->left = btree_remove(root->left, key);
+	}else if(root->key < key){
+		root->right = btree_remove(root->right, key);
+	}else{
+		btree *l = root->left;
+		btree *r = root->right;
+		free(root);
+		if(!r) return l;
+		btree *min = findmin(r);
+		min->right = removemin(r);
+		min->left = l;
+		return balance(min);
+	}
+	return balance(root);
+}
 
 int btree_search(btree **root, int key)
 {
@@ -201,5 +291,3 @@ void btree_free(btree **root)
 	free(*root);
 	*root = NULL;
 }
-
-/*Hash Table*/

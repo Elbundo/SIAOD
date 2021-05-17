@@ -77,7 +77,7 @@ int my_i(int *arr, int n, int key)
 		
 }
 
-int interfunc(int x1, int y1, int x2, int y2, int key)
+int interfunc(long int x1, long int y1, long int x2, long int y2, long int key)
 {
-	return (((x2-x1)*(key-y1))/(y2-y1)) + x1;
+	return (int)(((x2-x1)*(key-y1))/(y2-y1)) + x1;
 }

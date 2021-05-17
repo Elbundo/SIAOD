@@ -1,5 +1,5 @@
 CC = gcc
-SRCMODULES = mysearch.c my_strct.c hash.c ../Lab1/mysort.c
+SRCMODULES = my_stack.c my_deque.c
 OBJMODULES = $(SRCMODULES: .c=.o)
 CFLAGS = -Wall -g
 

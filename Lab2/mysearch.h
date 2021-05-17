@@ -6,8 +6,9 @@
 int my_bsearch(int*, int, int);
 int my_b(int*, int, int);
 int my_fsearch(int*, int, int);
+int my_f(int*, int, int);
 int fib(int);
 int my_intersearch(int*, int, int);
 int my_i(int*, int, int);
-int interfunc(int, int, int, int, int);
+int interfunc(long int, long int, long int, long int, long int);
 #endif

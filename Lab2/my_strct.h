@@ -34,24 +34,30 @@ int v_remove(vector*, int, int (*)(int*, int, int));
 void v_qsort(vector*);
 //search
 int v_bsearch(vector*, int);
+int v_fsearch(vector*, int);
 int v_intersearch(vector*, int);
 
 typedef struct my_btree{
 	int key;
+	char h;
 	struct my_btree *left, *right;
 } btree;
+
+char height(btree*);
+int bfactor(btree*);
+void fixheight(btree*);
+btree* rotateright(btree*);
+btree* rotateleft(btree*);
+btree* balance(btree*);
 
 //constructor
 btree* btree_create();
 //destructor
 void btree_free(btree**);
 //modifiers
-void btree_add(btree**, int);
-void btree_remove(btree**, int);
+btree* btree_add(btree*, int);
+btree* btree_remove(btree*, int);
 //search
 int btree_search(btree**, int);
 
-typedef struct my_vector hashtable;
-
-void ht_add();
 #endif

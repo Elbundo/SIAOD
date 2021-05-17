@@ -24,7 +24,7 @@ int place_queens(char (*arr)[N], int x, int k)
 	static int n = 0;
 	//printf("place_queens(cp_arr, %d, %d)\n", x, k);
 	char cp_arr[N][N] = {0};
-	if(k == 8){
+	if(k == N){
 		n++;
 		show_board(arr);
 		return n;
